@@ -22,6 +22,16 @@ final class MapLibreMapStateIos extends MapLibreMapState {
   StyleControllerIos? style;
 
   @override
+  int get nativeMapHandle {
+    final mapView = _mapView;
+    if (mapView == null) return 0;
+    // The MLNMapView's FFI pointer is the Objective-C object address.
+    // The movin C-API uses it to access the internal mbgl::Map via the
+    // private category (MLNMapView_Private.h).
+    return mapView.pointer.address;
+  }
+
+  @override
   Widget buildPlatformWidget(BuildContext context) {
     const viewType = 'plugins.flutter.io/maplibre';
     return UiKitView(

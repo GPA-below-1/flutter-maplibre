@@ -260,6 +260,39 @@ final class MapLibreMapStateAndroid extends MapLibreMapState
   });
 
   @override
+  int get nativeMapHandle {
+    final jMap = _jMap;
+    if (jMap == null) return 0;
+    return _cachedNativeMapHandle ??= _resolveNativeMapHandle(jMap);
+  }
+
+  int? _cachedNativeMapHandle;
+
+  /// Use JNI to call the Kotlin NativeHandleHelper that extracts the
+  /// C++ NativeMapView pointer via reflection (movin PR-4b §5.2).
+  static int _resolveNativeMapHandle(jni.MapLibreMap jMap) {
+    try {
+      final helperClass = JClass.forName(
+        r'com/github/josxha/maplibre/NativeHandleHelper',
+      );
+      final methodId = helperClass.staticMethodId(
+        r'getNativeMapPtr',
+        r'(Lorg/maplibre/android/maps/MapLibreMap;)J',
+      );
+      // Call the static method passing the MapLibreMap JNI reference.
+      final result = Jni.env.CallStaticLongMethodA(
+        helperClass.reference.pointer,
+        methodId,
+        Jni.jvalues([jMap.reference.pointer]),
+      );
+      helperClass.release();
+      return result;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();

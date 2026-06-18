@@ -86,6 +86,15 @@ abstract interface class MapController {
   /// Get the current camera position on the map.
   MapCamera? get camera;
 
+  /// The native platform map handle as an integer, suitable for passing to
+  /// native C-APIs (e.g. the movin route-draw engine's tile export). Returns
+  /// `0` on platforms that don't expose a native handle (web) or when the map
+  /// is not yet initialized.
+  ///
+  /// On Android, this is the `NativeMapView*` (C++ peer pointer).
+  /// On iOS, this is the `MLNMapView*` opaque pointer.
+  int get nativeMapHandle => 0;
+
   /// Returns the distance spanned by one logical pixel at the specified
   /// latitude and current zoom level.
   ///
