@@ -23,6 +23,13 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // Movin fork: local Maven repo hosting the custom MapLibre Android AAR
+        // with C-API symbols (plan §5.2). A proper maven{} repo (not flatDir)
+        // is required so AGP 7+ does not throw "Direct local .aar file
+        // dependencies are not supported when building an AAR".
+        maven {
+            url = uri("${project.projectDir}/libs/maven")
+        }
     }
 }
 
@@ -66,11 +73,11 @@ android {
     }
 
     dependencies {
-        // Movin fork: use local AAR with C-API symbols (plan §5.2).
+        // Movin fork: use the custom MapLibre Android AAR with C-API symbols
+        // (plan §5.2), served from a proper local Maven repository so AGP 8.x
+        // does not reject it as a "direct local .aar file dependency".
         // Original: api 'org.maplibre.gl:android-sdk-opengl:13.0.+'
-        // Use files() (direct file ref) rather than flatDir+name notation so
-        // the consumer project (:app) doesn't need its own flatDir entry.
-        api files('libs/MapLibreAndroid-opengl-release.aar')
+        api("org.maplibre.gl:MapLibreAndroid-opengl:13.0.0-movin")
         testImplementation "org.jetbrains.kotlin:kotlin-test"
         testImplementation "org.mockito:mockito-core:5.21.+"
     }
