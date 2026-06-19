@@ -279,11 +279,12 @@ final class MapLibreMapStateAndroid extends MapLibreMapState
         r'getNativeMapPtr',
         r'(Lorg/maplibre/android/maps/MapLibreMap;)J',
       );
-      // Call the static method passing the MapLibreMap JNI reference.
-      final result = Jni.env.CallStaticLongMethodA(
-        helperClass.reference.pointer,
-        methodId,
-        Jni.jvalues([jMap.reference.pointer]),
+      // Call the static method via the jni 1.0.0 JStaticMethodId.call API.
+      // jlong.type is the JCallable<jlong, int> for the Java long return type.
+      final result = methodId.call<jlong, int>(
+        helperClass,
+        jlong.type,
+        [jMap],
       );
       helperClass.release();
       return result;

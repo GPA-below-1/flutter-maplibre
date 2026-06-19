@@ -26,9 +26,10 @@ final class MapLibreMapStateIos extends MapLibreMapState {
     final mapView = _mapView;
     if (mapView == null) return 0;
     // The MLNMapView's FFI pointer is the Objective-C object address.
+    // Access via .ref.pointer (ObjCObject → ObjCObjectRef → Pointer<ObjCObjectImpl>).
     // The movin C-API uses it to access the internal mbgl::Map via the
     // private category (MLNMapView_Private.h).
-    return mapView.pointer.address;
+    return mapView.ref.pointer.address;
   }
 
   @override
