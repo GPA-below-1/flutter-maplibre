@@ -23,9 +23,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        // Movin fork AAR (PR-4b §5.2) — local flat dir with the forked
-        // maplibre-native AAR that exports movin C-API symbols.
-        flatDir { dirs "${project.projectDir}/libs" }
     }
 }
 
@@ -71,7 +68,9 @@ android {
     dependencies {
         // Movin fork: use local AAR with C-API symbols (plan §5.2).
         // Original: api 'org.maplibre.gl:android-sdk-opengl:13.0.+'
-        api(name: 'MapLibreAndroid-opengl-release', ext: 'aar')
+        // Use files() (direct file ref) rather than flatDir+name notation so
+        // the consumer project (:app) doesn't need its own flatDir entry.
+        api files('libs/MapLibreAndroid-opengl-release.aar')
         testImplementation "org.jetbrains.kotlin:kotlin-test"
         testImplementation "org.mockito:mockito-core:5.21.+"
     }
